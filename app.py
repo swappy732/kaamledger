@@ -66,6 +66,57 @@ def get_worker(worker_id):
         'skill': worker['skill'],
         'registered_on': worker['registered_on']
     })
+@app.route('/confirm', methods=['POST'])
+def confirm_job():
+    data = request.get_json()
+    worker_id = data['worker_id']
+    employer_phone = data['employer_phone']
+    job_type = data['job_type']
+    amount_paid = data['amount_paid']
+    rating = data['rating']
 
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute('''
+        INSERT INTO jobs (worker_id, employer_phone, job_type, amount_paid, rating)
+        VALUES (?, ?, ?, ?, ?)
+    ''', (worker_id, employer_phone, job_type, amount_paid, rating))
+    conn.commit()
+    conn.close()
+
+    return jsonify({
+        'message': 'Job confirmed successfully!',
+        'worker_id': worker_id,
+        'job_type': job_type,
+        'amount_paid': amount_paid
+    })
+
+@app.route('/history/<int:worker_id>', methods=['GET'])
+def job_history(worker_id):
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT * FROM jobs WHERE worker_id = ?
+        ORDER BY confirmed_on DESC
+    ''', (worker_id,))
+    jobs = cursor.fetchall()
+    conn.close()
+
+    result = []
+    for job in jobs:
+        result.append({
+            'job_id': job['id'],
+            'job_type': job['job_type'],
+            'amount_paid': job['amount_paid'],
+            'rating': job['rating'],
+            'employer_phone': job['employer_phone'],
+            'confirmed_on': job['confirmed_on']
+        })
+
+    return jsonify({
+        'worker_id': worker_id,
+        'total_jobs': len(result),
+        'jobs': result
+    })
 if __name__ == '__main__':
     app.run(debug=True)

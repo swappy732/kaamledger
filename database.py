@@ -16,6 +16,19 @@ def init_db():
         )
     ''')
 
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS jobs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            worker_id INTEGER NOT NULL,
+            employer_phone TEXT NOT NULL,
+            job_type TEXT NOT NULL,
+            amount_paid REAL NOT NULL,
+            rating INTEGER NOT NULL,
+            confirmed_on TEXT DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (worker_id) REFERENCES workers (id)
+        )
+    ''')
+
     conn.commit()
     conn.close()
     print('Database ready!')
