@@ -31,6 +31,10 @@ def verify_page():
 def confirm_job_page():
     return render_template('confirm.html')
 
+@app.route('/confirm/<int:worker_id>')
+def whatsapp_confirm(worker_id):
+    return render_template('whatsapp_confirm.html')
+
 @app.route('/register', methods=['POST'])
 def register_worker():
     data = request.get_json()
@@ -63,6 +67,7 @@ def register_worker():
         'message': 'Worker registered!',
         'worker_id': worker_id,
         'qr_code': qr_path
+
     })
 
 @app.route('/worker/<int:worker_id>', methods=['GET'])
@@ -108,6 +113,7 @@ def confirm_job():
         'job_type': job_type,
         'amount_paid': amount_paid
     })
+
 
 @app.route('/history/<int:worker_id>', methods=['GET'])
 def job_history(worker_id):
