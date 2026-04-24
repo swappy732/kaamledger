@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Job - KaamLedger</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #ECE5DD;
+            min-height: 100vh;
+            padding: 15px;
+        }
+        .chat-header {
+            background: #075E54;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .avatar {
+            width: 45px;
+            height: 45px;
+            background: #25D366;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+        .chat-header h3 { font-size: 16px; }
+        .chat-header p { font-size: 12px; color: #ccc; }
+        .chat-body {
+            background: white;
+            padding: 20px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+        .message-bubble {
+            background: #DCF8C6;
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+            border-left: 3px solid #25D366;
+        }
+        .worker-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .worker-info h2 { color: #075E54; font-size: 20px; }
+        .worker-info p { color: #666; font-size: 14px; margin-top: 5px; }
+        .verified-badge {
+            background: #25D366;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            display: inline-block;
+            margin-top: 8px;
+        }
+        .form-group { margin-bottom: 15px; }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #555;
+            font-size: 13px;
+            font-weight: bold;
+        }
+        select, input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+        }
+        .stars {
+            display: flex;
+            gap: 8px;
+            font-size: 40px;
+            cursor: pointer;
+            margin-top: 5px;
+            justify-content: center;
+        }
+        .star { color: #ddd; }
+        .star.active { color: #f39c12; }
+        .btn-confirm {
+            width: 100%;
+            padding: 16px;
+            background: #25D366;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .btn-confirm:hover { background: #128C7E; }
+        .success {
+            display: none;
+            background: #DCF8C6;
+            border: 1px solid #25D366;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 15px;
+        }
+        .success h3 { color: #075E54; font-size: 22px; margin-bottom: 10px; }
+        .success p { color: #333; font-size: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="chat-header">
+    <div class="avatar">🔨</div>
+    <div>
+        <h3>KaamLedger</h3>
+        <p>Verified Work Confirmation</p>
+    </div>
+</div>
+
+<div class="chat-body">
+    <div class="message-bubble">
+        👷 A worker has requested job confirmation.<br>
+        Please confirm the work details below.<br>
+        <strong>Takes less than 30 seconds ✅</strong>
+    </div>
+
+    <div class="worker-info">
+        <h2 id="workerName">Loading...</h2>
+        <p id="workerSkill"></p>
+        <p id="workerPhone"></p>
+        <span class="verified-badge">✅ KaamLedger Verified</span>
+    </div>
+
+    <div id="formSection">
+        <div class="form-group">
+            <label>📞 Your Phone Number</label>
+            <input type="tel" id="employerPhone" placeholder="9999999999">
+        </div>
+
+        <div class="form-group">
+            <label>🔧 What work was done?</label>
+            <select id="jobType">
+                <option value="">-- Select Job --</option>
+                <option value="Plumbing">Plumbing</option>
+                <option value="Electrical Work">Electrical Work</option>
+                <option value="Carpentry">Carpentry</option>
+                <option value="Painting">Painting</option>
+                <option value="Masonry">Masonry</option>
+                <option value="Welding">Welding</option>
+                <option value="General Help">General Help</option>
+                <option value="Driving">Driving</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>💰 Amount Paid (₹)</label>
+            <input type="number" id="amountPaid" placeholder="500">
+        </div>
+
+        <div class="form-group">
+            <label style="text-align:center; display:block;">⭐ Rate this Worker</label>
+            <div class="stars" id="stars">
+                <span class="star" onclick="setRating(1)">★</span>
+                <span class="star" onclick="setRating(2)">★</span>
+                <span class="star" onclick="setRating(3)">★</span>
+                <span class="star" onclick="setRating(4)">★</span>
+                <span class="star" onclick="setRating(5)">★</span>
+            </div>
+        </div>
+
+        <button class="btn-confirm" onclick="confirmJob()">
+            ✅ Confirm Job Done
+        </button>
+    </div>
+
+    <div class="success" id="successBox">
+        <h3>🎉 Job Confirmed!</h3>
+        <p id="successMsg"></p>
+        <br>
+        <p>Worker's KaamLedger profile updated.<br>
+        Thank you for verifying! 🙏</p>
+    </div>
+</div>
+
+<script>
+let selectedRating = 0;
+const pathParts = window.location.pathname.split('/');
+const workerId = pathParts[pathParts.length - 1];
+
+async function loadWorker() {
+    try {
+        const res = await fetch(`/worker/${workerId}`);
+        if (!res.ok) {
+            document.getElementById('workerName').innerText = 'Worker Not Found';
+            return;
+        }
+        const worker = await res.json();
+        document.getElementById('workerName').innerText = '👷 ' + worker.name;
+        document.getElementById('workerSkill').innerText = '🔧 ' + worker.skill;
+        document.getElementById('workerPhone').innerText = '📞 ' + worker.phone;
+    } catch(e) {
+        document.getElementById('workerName').innerText = 'Error loading worker';
+    }
+}
+
+function setRating(rating) {
+    selectedRating = rating;
+    document.querySelectorAll('.star').forEach((star, i) => {
+        star.classList.toggle('active', i < rating);
+    });
+}
+
+async function confirmJob() {
+    const employerPhone = document.getElementById('employerPhone').value;
+    const jobType = document.getElementById('jobType').value;
+    const amountPaid = document.getElementById('amountPaid').value;
+
+    if (!employerPhone || !jobType || !amountPaid || selectedRating === 0) {
+        alert('Please fill all fields and give a rating!');
+        return;
+    }
+
+    const res = await fetch('/confirm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            worker_id: parseInt(workerId),
+            employer_phone: employerPhone,
+            job_type: jobType,
+            amount_paid: parseFloat(amountPaid),
+            rating: selectedRating
+        })
+    });
+
+    const data = await res.json();
+    if (data.message) {
+        document.getElementById('successMsg').innerText =
+            `${jobType} • ₹${amountPaid} • ${selectedRating}/5 ⭐`;
+        document.getElementById('formSection').style.display = 'none';
+        document.getElementById('successBox').style.display = 'block';
+    }
+}
+
+loadWorker();
+</script>
+
+</body>
+</html>
