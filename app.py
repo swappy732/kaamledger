@@ -48,7 +48,7 @@ def register_worker():
     conn.commit()
     worker_id = cursor.lastrowid
 
-    qr_data = f'http://127.0.0.1:5000/worker/{worker_id}'
+    qr_data = f'https://kaamledger.onrender.com/confirm/{worker_id}'
     qr_img = qrcode.make(qr_data)
     os.makedirs('qrcodes', exist_ok=True)
     qr_path = f'qrcodes/worker_{worker_id}.png'
