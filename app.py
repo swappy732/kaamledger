@@ -27,6 +27,10 @@ def register_worker_page():
 def verify_page():
     return render_template('verify.html')
 
+@app.route('/confirm-job')
+def confirm_job_page():
+    return render_template('confirm.html')
+
 @app.route('/register', methods=['POST'])
 def register_worker():
     data = request.get_json()

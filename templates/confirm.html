@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Job - KaamLedger</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f4f4f4; }
+
+        .navbar {
+            background: #2c3e50;
+            padding: 15px 30px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar h1 { font-size: 24px; color: #f39c12; }
+        .navbar a { color: #ccc; text-decoration: none; font-size: 14px; }
+
+        .container {
+            max-width: 550px;
+            margin: 50px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+
+        .worker-card {
+            background: #f8f9fa;
+            border-left: 4px solid #27ae60;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 25px;
+            display: none;
+        }
+        .worker-card h3 { color: #2c3e50; margin-bottom: 5px; }
+        .worker-card p { color: #666; font-size: 14px; }
+        .badge {
+            background: #27ae60;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            display: inline-block;
+            margin-top: 8px;
+        }
+
+        h2 { text-align: center; color: #2c3e50; margin-bottom: 10px; }
+        .subtitle {
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .form-group { margin-bottom: 18px; }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #555;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 15px;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .stars {
+            display: flex;
+            gap: 10px;
+            font-size: 30px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+        .star { color: #ddd; transition: color 0.2s; }
+        .star.active { color: #f39c12; }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .btn:hover { background: #219a52; }
+        .btn-search {
+            background: #3498db;
+            padding: 12px 20px;
+            width: auto;
+            margin-top: 0;
+        }
+
+        .search-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        .search-row input { flex: 1; }
+
+        .success {
+            display: none;
+            background: #d4edda;
+            color: #155724;
+            padding: 25px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .success h3 { font-size: 22px; margin-bottom: 10px; }
+        .success p { font-size: 15px; }
+
+        .back {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .back a { color: #3498db; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <h1>🔨 KaamLedger</h1>
+    <a href="/">← Back to Home</a>
+</nav>
+
+<div class="container">
+    <h2>Confirm Job Completion</h2>
+    <p class="subtitle">Search the worker, fill in job details and confirm</p>
+
+    <div class="search-row">
+        <input type="number" id="searchId" placeholder="Enter Worker ID">
+        <button class="btn btn-search" onclick="searchWorker()">Find Worker</button>
+    </div>
+
+    <div class="worker-card" id="workerCard">
+        <h3 id="cardName"></h3>
+        <p id="cardSkill"></p>
+        <span class="badge">✅ KaamLedger Verified</span>
+    </div>
+
+    <div id="formSection" style="display:none;">
+        <div class="form-group">
+            <label>Your Phone Number</label>
+            <input type="text" id="employerPhone" placeholder="e.g. 9999999999">
+        </div>
+
+        <div class="form-group">
+            <label>Job Type</label>
+            <select id="jobType">
+                <option value="">-- Select Job --</option>
+                <option value="Plumbing">Plumbing</option>
+                <option value="Electrical Work">Electrical Work</option>
+                <option value="Carpentry">Carpentry</option>
+                <option value="Painting">Painting</option>
+                <option value="Masonry">Masonry</option>
+                <option value="Welding">Welding</option>
+                <option value="General Help">General Help</option>
+                <option value="Driving">Driving</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Amount Paid (₹)</label>
+            <input type="number" id="amountPaid" placeholder="e.g. 500">
+        </div>
+
+        <div class="form-group">
+            <label>Rate this Worker</label>
+            <div class="stars" id="stars">
+                <span class="star" onclick="setRating(1)">★</span>
+                <span class="star" onclick="setRating(2)">★</span>
+                <span class="star" onclick="setRating(3)">★</span>
+                <span class="star" onclick="setRating(4)">★</span>
+                <span class="star" onclick="setRating(5)">★</span>
+            </div>
+        </div>
+
+        <button class="btn" onclick="confirmJob()">✅ Confirm Job</button>
+    </div>
+
+    <div class="success" id="successBox">
+        <h3>🎉 Job Confirmed!</h3>
+        <p id="successMsg"></p>
+        <br>
+        <p>Worker's profile has been updated.</p>
+    </div>
+
+    <div class="back">
+        <a href="/">← Back to Home</a>
+    </div>
+</div>
+
+<script>
+let selectedRating = 0;
+let selectedWorkerId = null;
+
+async function searchWorker() {
+    const id = document.getElementById('searchId').value;
+    if (!id) { alert('Enter a worker ID'); return; }
+
+    const res = await fetch(`/worker/${id}`);
+    if (!res.ok) {
+        alert('Worker not found!');
+        return;
+    }
+
+    const worker = await res.json();
+    selectedWorkerId = worker.id;
+
+    document.getElementById('cardName').innerText = '👷 ' + worker.name;
+    document.getElementById('cardSkill').innerText = '🔧 ' + worker.skill;
+    document.getElementById('workerCard').style.display = 'block';
+    document.getElementById('formSection').style.display = 'block';
+}
+
+function setRating(rating) {
+    selectedRating = rating;
+    const stars = document.querySelectorAll('.star');
+    stars.forEach((star, index) => {
+        star.classList.toggle('active', index < rating);
+    });
+}
+
+async function confirmJob() {
+    const employerPhone = document.getElementById('employerPhone').value;
+    const jobType = document.getElementById('jobType').value;
+    const amountPaid = document.getElementById('amountPaid').value;
+
+    if (!employerPhone || !jobType || !amountPaid || selectedRating === 0) {
+        alert('Please fill all fields and select a rating!');
+        return;
+    }
+
+    const res = await fetch('/confirm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            worker_id: selectedWorkerId,
+            employer_phone: employerPhone,
+            job_type: jobType,
+            amount_paid: parseFloat(amountPaid),
+            rating: selectedRating
+        })
+    });
+
+    const data = await res.json();
+
+    if (data.message) {
+        document.getElementById('successMsg').innerText =
+            `${jobType} confirmed! ₹${amountPaid} paid. Rating: ${selectedRating}/5 ⭐`;
+        document.getElementById('successBox').style.display = 'block';
+        document.getElementById('formSection').style.display = 'none';
+    }
+}
+</script>
+
+</body>
+</html>
