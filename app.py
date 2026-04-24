@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_file, render_template
+from flask import Flask, request, jsonify, send_file, render_template, send_from_directory
 import sqlite3
 import qrcode
 import os
@@ -34,6 +34,24 @@ def confirm_job_page():
 @app.route('/confirm/<int:worker_id>')
 def whatsapp_confirm(worker_id):
     return render_template('whatsapp_confirm.html')
+
+@app.route('/myqr/<int:worker_id>')
+def my_qr(worker_id):
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM workers WHERE id = ?', (worker_id,))
+    worker = cursor.fetchone()
+    conn.close()
+
+    if worker is None:
+        return jsonify({'error': 'Worker not found'}), 404
+
+    return render_template('myqr.html', worker=worker)
+
+
+@app.route('/qrcode/<int:worker_id>')
+def serve_qr(worker_id):
+    return send_from_directory('qrcodes', f'worker_{worker_id}.png')
 
 @app.route('/register', methods=['POST'])
 def register_worker():

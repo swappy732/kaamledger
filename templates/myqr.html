@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My QR Code - KaamLedger</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .navbar {
+            background: #2c3e50;
+            padding: 15px 20px;
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .navbar h1 { font-size: 20px; color: #f39c12; }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .worker-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        .worker-skill {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .worker-id {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 20px;
+        }
+        .verified-badge {
+            background: #27ae60;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            display: inline-block;
+            margin-bottom: 25px;
+        }
+
+        .qr-container {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border: 2px dashed #27ae60;
+        }
+        .qr-container img {
+            width: 200px;
+            height: 200px;
+            image-rendering: pixelated;
+        }
+        .qr-label {
+            font-size: 12px;
+            color: #888;
+            margin-top: 10px;
+        }
+
+        .btn-download {
+            width: 100%;
+            padding: 15px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 12px;
+            text-decoration: none;
+            display: block;
+        }
+        .btn-download:hover { background: #219a52; }
+
+        .btn-share {
+            width: 100%;
+            padding: 15px;
+            background: #25D366;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 12px;
+            display: block;
+        }
+        .btn-share:hover { background: #128C7E; }
+
+        .btn-certificate {
+            width: 100%;
+            padding: 15px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            display: block;
+            text-decoration: none;
+        }
+        .btn-certificate:hover { background: #2980b9; }
+
+        .instructions {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: left;
+            font-size: 13px;
+            color: #856404;
+            line-height: 1.8;
+        }
+        .instructions strong { display: block; margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <h1>🔨 KaamLedger</h1>
+    <a href="/" style="color:#ccc; text-decoration:none; font-size:13px;">Home</a>
+</div>
+
+<div class="card">
+    <div class="worker-name">👷 {{ worker['name'] }}</div>
+    <div class="worker-skill">🔧 {{ worker['skill'] }}</div>
+    <div class="worker-id">Worker ID: #{{ worker['id'] }}</div>
+    <span class="verified-badge">✅ KaamLedger Verified</span>
+
+    <div class="qr-container">
+        <img src="/qrcode/{{ worker['id'] }}" alt="QR Code">
+        <div class="qr-label">Scan this QR to confirm a job</div>
+    </div>
+
+    <a href="/qrcode/{{ worker['id'] }}" download="kaamledger_qr_{{ worker['id'] }}.png" class="btn-download">
+        📥 Download My QR Code
+    </a>
+
+    <button class="btn-share" onclick="shareWhatsApp()">
+        📱 Share Confirmation Link
+    </button>
+
+    <a href="/certificate/{{ worker['id'] }}" class="btn-certificate">
+        📄 Download Certificate
+    </a>
+
+    <div class="instructions">
+        <strong>📋 How to use your QR Code:</strong>
+        1. Download or print this QR code<br>
+        2. Show it to your employer after completing work<br>
+        3. Employer scans it with their phone camera<br>
+        4. They confirm the job in 30 seconds<br>
+        5. Your work history gets updated automatically!
+    </div>
+</div>
+
+<script>
+function shareWhatsApp() {
+    const link = `https://kaamledger.onrender.com/confirm/{{ worker['id'] }}`;
+    const message = `Hi! Please confirm my work on KaamLedger. It only takes 30 seconds: ${link}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+}
+</script>
+
+</body>
+</html>
