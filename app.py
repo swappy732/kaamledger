@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file, render_template
 import sqlite3
 import qrcode
 import os
@@ -6,7 +6,6 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet
-from flask import send_file
 import io
 
 app = Flask(__name__)
@@ -18,7 +17,15 @@ def get_db():
 
 @app.route('/')
 def home():
-    return 'KaamLedger is running!'
+    return render_template('index.html')
+
+@app.route('/register-worker')
+def register_worker_page():
+    return render_template('register.html')
+
+@app.route('/verify')
+def verify_page():
+    return render_template('verify.html')
 
 @app.route('/register', methods=['POST'])
 def register_worker():
@@ -72,6 +79,7 @@ def get_worker(worker_id):
         'skill': worker['skill'],
         'registered_on': worker['registered_on']
     })
+
 @app.route('/confirm', methods=['POST'])
 def confirm_job():
     data = request.get_json()
@@ -124,6 +132,7 @@ def job_history(worker_id):
         'total_jobs': len(result),
         'jobs': result
     })
+
 @app.route('/certificate/<int:worker_id>', methods=['GET'])
 def generate_certificate(worker_id):
     conn = get_db()
@@ -200,5 +209,6 @@ def generate_certificate(worker_id):
         download_name=f'kaamledger_certificate_{worker_id}.pdf',
         mimetype='application/pdf'
     )
+
 if __name__ == '__main__':
     app.run(debug=True)

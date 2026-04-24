@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Worker - KaamLedger</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f4f4f4; }
+
+        .navbar {
+            background: #2c3e50;
+            padding: 15px 30px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar h1 { font-size: 24px; color: #f39c12; }
+        .navbar a { color: #ccc; text-decoration: none; font-size: 14px; }
+
+        .container {
+            max-width: 550px;
+            margin: 50px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #555;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 15px;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: #f39c12;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .btn:hover { background: #e67e22; }
+
+        .success {
+            display: none;
+            background: #d4edda;
+            color: #155724;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .success h3 { margin-bottom: 10px; }
+        .success a {
+            color: #155724;
+            font-weight: bold;
+        }
+
+        .back { 
+            text-align: center; 
+            margin-top: 20px; 
+        }
+        .back a { color: #3498db; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <h1>🔨 KaamLedger</h1>
+    <a href="/">← Back to Home</a>
+</nav>
+
+<div class="container">
+    <h2>Register a Worker</h2>
+    <p class="subtitle">Fill in the details to create a verified KaamLedger profile</p>
+
+    <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="name" placeholder="e.g. Ramesh Kumar">
+    </div>
+
+    <div class="form-group">
+        <label>Phone Number</label>
+        <input type="text" id="phone" placeholder="e.g. 9876543210">
+    </div>
+
+    <div class="form-group">
+        <label>Skill / Trade</label>
+        <select id="skill">
+            <option value="">-- Select Skill --</option>
+            <option value="Plumber">Plumber</option>
+            <option value="Electrician">Electrician</option>
+            <option value="Carpenter">Carpenter</option>
+            <option value="Painter">Painter</option>
+            <option value="Mason">Mason</option>
+            <option value="Welder">Welder</option>
+            <option value="Helper">Helper</option>
+            <option value="Driver">Driver</option>
+            <option value="Other">Other</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Last 4 digits of Aadhaar</label>
+        <input type="text" id="aadhaar" placeholder="e.g. 4521" maxlength="4">
+    </div>
+
+    <button class="btn" onclick="registerWorker()">Register Worker</button>
+
+    <div class="success" id="successBox">
+        <h3>✅ Worker Registered!</h3>
+        <p id="successMsg"></p>
+        <br>
+        <a href="/" id="viewProfile">Go to Home</a>
+    </div>
+
+    <div class="back">
+        <a href="/">← Back to Home</a>
+    </div>
+</div>
+
+<script>
+async function registerWorker() {
+    const name = document.getElementById('name').value;
+    const phone = document.getElementById('phone').value;
+    const skill = document.getElementById('skill').value;
+    const aadhaar = document.getElementById('aadhaar').value;
+
+    if (!name || !phone || !skill || !aadhaar) {
+        alert('Please fill all fields!');
+        return;
+    }
+
+    const response = await fetch('/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            name: name,
+            phone: phone,
+            skill: skill,
+            aadhaar_last4: aadhaar
+        })
+    });
+
+    const data = await response.json();
+
+    if (data.worker_id) {
+        document.getElementById('successMsg').innerText = 
+            `Worker ID: ${data.worker_id} | QR Code saved!`;
+        document.getElementById('successBox').style.display = 'block';
+    }
+}
+</script>
+
+</body>
+</html>
