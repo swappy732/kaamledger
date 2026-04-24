@@ -179,10 +179,19 @@ async function registerWorker() {
     const data = await response.json();
 
     if (data.worker_id) {
-        document.getElementById('successMsg').innerText = 
-            `Worker ID: ${data.worker_id} | QR Code saved!`;
-        document.getElementById('successBox').style.display = 'block';
-    }
+    document.getElementById('successMsg').innerHTML = `
+        <h3>✅ Registration Successful!</h3>
+        <p>Your Worker ID: <strong>#${data.worker_id}</strong></p>
+        <br>
+        <a href="/myqr/${data.worker_id}" 
+           style="display:block; padding:15px; background:#27ae60; 
+           color:white; border-radius:8px; text-decoration:none; 
+           font-size:16px; margin-top:10px;">
+           📱 View & Download My QR Code
+        </a>
+    `;
+    document.getElementById('successBox').style.display = 'block';
+}
 }
 </script>
 
