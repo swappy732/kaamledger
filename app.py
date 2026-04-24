@@ -238,5 +238,71 @@ def generate_certificate(worker_id):
         mimetype='application/pdf'
     )
 
+@app.route('/kaamscore/<int:worker_id>', methods=['GET'])
+def kaam_score(worker_id):
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute('SELECT * FROM workers WHERE id = ?', (worker_id,))
+    worker = cursor.fetchone()
+
+    if worker is None:
+        return jsonify({'error': 'Worker not found'}), 404
+
+    cursor.execute('SELECT * FROM jobs WHERE worker_id = ?', (worker_id,))
+    jobs = cursor.fetchall()
+    conn.close()
+
+    total_jobs = len(jobs)
+
+    if total_jobs == 0:
+        return jsonify({
+            'worker_id': worker_id,
+            'name': worker['name'],
+            'kaamscore': 0,
+            'reliability': 0,
+            'income': 0,
+            'skill': 0,
+            'trust': 0,
+            'message': 'No jobs confirmed yet'
+        })
+
+    # Reliability Score — based on jobs per month
+    from datetime import datetime
+    registered = datetime.strptime(
+        worker['registered_on'][:10], '%Y-%m-%d')
+    days_active = max((datetime.now() - registered).days, 1)
+    jobs_per_month = (total_jobs / days_active) * 30
+    reliability = min(round(jobs_per_month * 20), 100)
+
+    # Income Score — based on average earnings
+    avg_earning = sum(job['amount_paid'] for job in jobs) / total_jobs
+    income = min(round((avg_earning / 1000) * 100), 100)
+
+    # Skill Score — based on average rating
+    avg_rating = sum(job['rating'] for job in jobs) / total_jobs
+    skill = round((avg_rating / 5) * 100)
+
+    # Trust Score — based on unique employers
+    unique_employers = len(set(job['employer_phone'] for job in jobs))
+    trust = min(unique_employers * 15, 100)
+
+    # Overall KaamScore
+    kaamscore = round((reliability + income + skill + trust) / 4)
+
+    return jsonify({
+        'worker_id': worker_id,
+        'name': worker['name'],
+        'kaamscore': kaamscore,
+        'reliability': reliability,
+        'income': income,
+        'skill': skill,
+        'trust': trust,
+        'total_jobs': total_jobs,
+        'avg_earning': round(avg_earning),
+        'avg_rating': round(avg_rating, 1),
+        'unique_employers': unique_employers
+    })
+
 if __name__ == '__main__':
     app.run(debug=True)
